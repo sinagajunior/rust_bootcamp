@@ -5,7 +5,7 @@ use std::io;
 
 fn main() {
     println!("Fibonacci Sequence Generator");
-    println!("Enter the number of terms youi want to generate");
+    println!("Enter the number of terms you want to generate");
     
     let num_terms = match get_input_as_u32() {
         Some(value) => value,
