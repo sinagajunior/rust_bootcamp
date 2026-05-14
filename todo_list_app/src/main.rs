@@ -14,7 +14,7 @@ struct Task {
 
 
 fn main() {
-    let mut tasks: vec<Task> = load_task();
+    let mut tasks: Vec<Task> = load_task();
     
     loop {
      println!("\n To-Do List Menu:");
@@ -27,7 +27,7 @@ fn main() {
     let choice = get_input("Enter your choice: ");
     match choice.trim() {
        "1" => add_task(&mut tasks),
-       "2" => view_task(&tasks),
+       "2" => view_tasks(&tasks),
        "3" => mark_task_complete(&mut tasks),
        "4" => delete_task(&mut tasks),
        "5" => {
@@ -35,6 +35,8 @@ fn main() {
             println!("Tasks saved. Goodbye!"); 
             break;          
        }
+        _ => println!("Invalid choice . Please try again"),
+       
 
     } 
     }
@@ -62,15 +64,64 @@ fn load_task() -> Vec<Task> {
 }
 
 // Save tasks to file
-fn save_tasks(tasks: &mut Vec<Task>){
+fn save_tasks(tasks: &Vec<Task>){
+    let json =serde_json::to_string_pretty(tasks).expect("Failed to serialized task");
+    let mut file = File::create("tasks.json").expect("Failed to write tasks to file");
+    file.write_all(json.as_bytes()).expect("Failed to write tasks to file");
+}
+    
+    // Add tasks
+fn add_task(tasks: &mut Vec<Task>){    
     let description = get_input("Enter task description ");
     let id = tasks.len()+1;
     tasks.push(Task { id, 
         description:description.trim().to_string(),
          completed:false });
+         println!("Task added!");
 } 
 
 // View all tasks
 fn view_tasks(tasks: &Vec<Task>) {
-    
+    if tasks.is_empty(){
+        println!("No tasks found");
+    }else {
+        for task in tasks{
+            let status = if task.completed{"V"} else {"X"};
+            println!("{} - {}: {}", task.id,status,task.description);
+        }
+    }
 }
+
+
+fn mark_task_complete(tasks: &mut Vec<Task>) {
+let id = get_input("Enter task ID to mark as complete");
+if let Ok(id) = id.trim().parse::<usize>(){
+    if let Some(task) = tasks.iter_mut().find(|t|t.id == id){
+        task.completed = true;
+        println!("Task marked as complete!");
+    }else {
+        println!("Task not found");
+       } 
+        }else {
+        println!("Ivalid task ID");
+    }
+  }
+
+
+// Delete a task
+fn delete_task(tasks: &mut Vec<Task>) {
+    let id = get_input("Enter task ID to delete: ");
+    if let Ok(id) = id.trim().parse::<usize>() {
+       if let Some(index) = tasks.iter().position(|t|t.id == id) {
+        tasks.remove(index);
+        println!("Task deleted!");
+       }else {
+        println!("Task not found");
+       }
+    }else {
+        println!("Invalid task ID");
+    }
+}
+
+
+
