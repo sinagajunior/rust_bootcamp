@@ -1,4 +1,4 @@
-use std::{io, thread, time::Duration};
+use std::{thread, time::Duration};
 use std::io::{self, Write};
 
 
@@ -31,7 +31,7 @@ if parts.len() != 3 {
     return None;
 }
 
-let hour = parts[0].parse::<u64>().ok()?;
+let hours = parts[0].parse::<u64>().ok()?;
 let minutes = parts[1].parse::<u64>().ok()?;
 let seconds = parts[2].parse::<u64>().ok()?;
 Some((hours,minutes,seconds))
@@ -41,4 +41,13 @@ Some((hours,minutes,seconds))
 // Start the timer and display countdown
 fn start_timer(hours:u64,minutes:u64,seconds:u64){
     let total_seconds = hours * 3600 + minutes * 60 + seconds;
+    for i in (1..=total_seconds).rev() {
+        let hrs = i / 3600;
+        let mins = (i % 3600)/60;
+        let secs = i % 60;
+        print!("\r Time remaining: {:02}:{:02}:{:02}",hrs, mins, secs);
+        io::stdout().flush().unwrap();
+        thread::sleep(Duration::from_secs(1));
+    }
+    println!(); //Move to new line after the countdown ends
 }
