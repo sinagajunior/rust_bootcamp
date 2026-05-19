@@ -25,7 +25,7 @@ impl LinkedList {
 
     fn push_back(&mut self, val: i32) {
         let mut current = &mut self.head;
-        while let Some(mut node) = current {
+        while let Some(node) = current {
             current = &mut node.next;
         }
         *current = Some(Box::new(Node {
@@ -36,13 +36,26 @@ impl LinkedList {
 
     fn delete(&mut self, val: i32) -> bool {
         let mut current = &mut self.head;
-        while let Some(ref mut node) = current {
-            if node.value == val {
-                *current = node.next.take();
+
+        loop {
+            // 1. Check if there is a node without holding a loop-wide borrow lock
+            if current.is_none() {
+                break;
+            }
+
+            // 2. Safely inspect the value by unwrapping a temporary reference
+            if current.as_ref().unwrap().value == val {
+                // Take the next node out
+                let next_node = current.as_mut().unwrap().next.take();
+                // Overwrite current safely now that the borrow checker is satisfied
+                *current = next_node;
                 return true;
             }
-            current = &mut node.next;
+
+            // 3. Move the pointer forward
+            current = &mut current.as_mut().unwrap().next;
         }
+
         false
     }
 
@@ -60,18 +73,18 @@ impl LinkedList {
     fn print(&self) {
         let mut current = &self.head;
         print!("List: ");
-        while let Some(ref node) = current {
-            print!("{}->", node.value);
+        while let Some(node) = current {
+            print!("{} -> ", node.value);
             current = &node.next;
         }
-        println!("Node");
+        println!("None");
     }
 }
 
 impl fmt::Display for LinkedList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut current = &self.head;
-        while let Some(ref node) = current {
+        while let Some(node) = current {
             write!(f, "{}->", node.value)?;
             current = &node.next;
         }
