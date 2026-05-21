@@ -1,0 +1,3 @@
+2026-05-21 08:42:26 [INFO]: test
+2026-05-21 08:42:44 [WARN]: hahahah dsfsdfsd
+2026-05-21 08:42:54 [ERROR]: terst me ahhahahlsds error
