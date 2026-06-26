@@ -31,6 +31,7 @@ fn main() {
                    println!("Account created with id {}",next_id);
                    next_id +=1;
            }
+        
            "2" => {
             let id = input("Account ID :").parse::<usize>().unwrap_or(0);
 
