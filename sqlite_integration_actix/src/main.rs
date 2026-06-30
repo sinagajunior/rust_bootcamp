@@ -12,7 +12,6 @@ struct Post {
 
 #[derive(Deserialize)]
 struct NewPost {
-    id: i64,
     title: String,
     content: String,
 }
@@ -50,7 +49,7 @@ async fn add_post(db: web::Data<SqlitePool>,
 async fn main() -> std::io::Result<()> {
     println!("Server started at http://localhost:8080");
 
-    let db = SqlitePool::connect("sqlite:blod..db").await.expect("DB Connect failed");
+    let db = SqlitePool::connect("sqlite:blog.db").await.expect("DB Connect failed");
 
     HttpServer::new(move || App::new()
         .app_data(web::Data::new(db.clone()))
